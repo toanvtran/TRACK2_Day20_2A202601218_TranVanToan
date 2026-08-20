@@ -224,7 +224,13 @@ LOCUST   := locust
 SYSPY    := python
 PORT     := $(or $(LAB_SERVER_PORT),8080)
 
+# Extra cmake flags for `make build-llama` (bonus B1). Default is a CPU build.
+# To match your prebuilt CUDA runtime, override on the command line, e.g.:
+#   LLAMA_CMAKE_FLAGS="-DGGML_CUDA=ON" make build-llama
+LLAMA_CMAKE_FLAGS := $(LLAMA_CMAKE_FLAGS)
+
 # Hardware detection with Windows / Git Bash fallbacks
+
 CORES    := $(shell echo $$NUMBER_OF_PROCESSORS 2>/dev/null || nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 RAM_GB   := $(shell powershell -NoProfile -Command "[math]::Floor((Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1GB)" 2>/dev/null \
              || wmic OS get TotalVisibleMemorySize 2>/dev/null | tail -n +2 | awk '{printf "%d", $$1/1048576}' \
@@ -327,9 +333,11 @@ build-llama: venv-check ## B1 - build llama.cpp from source and beat the prebuil
 	  command -v cmake >/dev/null || { \
 	    echo "cmake not found. Please install cmake or run inside VS Developer Command Prompt" >&2; \
 	    exit 1; }; \
+	  BRANCH=$$( $(PY) -c "import sys;sys.path.insert(0,\"lib\");import labkit;print(labkit.LLAMA_CPP_BUILD)" ); \
+	  [ -n "$$BRANCH" ] || { echo "Could not resolve llama.cpp build tag (labkit import failed?)" >&2; exit 1; }; \
 	  mkdir -p bonus && cd bonus; \
 	  if [ ! -d llama.cpp ]; then \
-	    git clone --depth 1 --branch $$( $(PY) -c "import sys;sys.path.insert(0,\"lib\");import labkit;print(labkit.LLAMA_CPP_BUILD)" ) \
+	    git clone --depth 1 --branch "$$BRANCH" \
 	      https://github.com/ggml-org/llama.cpp; \
 	  fi; \
 	  cd llama.cpp; \

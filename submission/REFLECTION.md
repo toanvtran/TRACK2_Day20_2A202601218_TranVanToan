@@ -142,19 +142,51 @@ KV cache, quant) chứ chỉnh `-t` là công cốc.
 > Bỏ trống nếu không làm. Xem `bonus/README.md`. Đừng làm hết — **một** finding sâu
 > ăn điểm hơn năm bảng nông.
 
-**Đã làm:** _<B1 build-compare / B2 sweep nào / B4 challenge nào / B5 lựa chọn nào>_
+**Đã làm:** B1 (build-compare: prebuilt vs source build, cùng revision `b10488`) +
+B2 (`make sweep-gpu`: quét `-ngl` 0 → 99).
 
-**Numbers:**
+**Numbers (B1 — cả hai side pin `ngl=0` để cô lập compiler, metric tg128):**
 
 ```
-before:  <số>
-after:   <số>
-speedup: <X.Y>×
+before:  10.8 tok/s  (prebuilt release, runtime CPU dispatch)
+after:   11.0 tok/s  (source build, -DGGML_NATIVE=ON cho đúng CPU này)
+speedup: 1.02×  (trong khoảng 3% — thực chất không khác biệt)
+```
+
+**Numbers (B2 — GPU offload sweep, metric tg128):**
+
+```
+before:  10.5 tok/s  (-ngl 0, CPU-only)
+after:   104.8 tok/s (-ngl 99, full offload — best)
+speedup: 10.00×
 ```
 
 **Điều này nói lên gì mà deck chưa nói:**
 
-_(để trống nếu bạn không làm phần này)_
+Hai kết quả đặt cạnh nhau kể một câu chuyện mà deck (vốn nói về GPU datacenter)
+không nói thẳng cho máy laptop: **knob nào đáng chỉnh phụ thuộc hoàn toàn vào việc
+work có nằm trên accelerator hay không.**
+
+B1 cho thấy compiler flag gần như vô nghĩa ở đây: build `-DGGML_NATIVE=ON` cho đúng
+CPU chỉ nhanh hơn prebuilt 2%. Lý do là `hardware.json` báo CPU không lộ vector
+extension nào cho probe (`Vector extensions detected: none`), nên `-DGGML_NATIVE=ON`
+gần như không có AVX2/AVX-512 mới để bật thêm; đồng thời prebuilt release của
+llama.cpp đã ship nhiều `libggml-cpu-*` theo microarchitecture và chọn qua CPUID lúc
+chạy, nên nó vốn đã dùng đúng kernel. Decode tg128 lại là bước autoregressive
+bound bởi **memory bandwidth**, không phải instruction throughput — nên dù compiler
+có bật thêm lệnh SIMD cũng không dịch được thành tốc độ. Đây là finding "prebuilt
+thắng/hoà" và cơ chế là bandwidth-bound.
+
+B2 cho thấy knob thật sự nằm ở tầng GPU: chuyển từ `-ngl 0` sang `-ngl 99` cho
+**10×** — và đường cong tăng đơn điệu (10.5 → 12.5 → 20.7 → 36.6 → 58.1 → 104.8),
+peak đúng ở full offload, **không** có knee ở giá trị partial. Điều đó nói rằng
+toàn bộ model + KV cache vừa trong 6 GB VRAM của RTX 3060 (không bị tràn), nên mỗi
+layer đẩy lên GPU đều được trả công. Nếu curve peak ở giá trị partial thì mới là
+dấu hiệu VRAM hết và device phải fetch lại weight qua PCIe — ở đây không xảy ra.
+
+Kết nối với §5: đó chính là lý do sweep thread `-t` ở base track gần như phẳng — khi
+đã `ngl=99`, cả compiler flag (B1) lẫn thread count (§5) đều bị GPU vô hiệu hoá; knob
+duy nhất còn nghĩa là offload/quant/batch ở tầng accelerator.
 
 ---
 
@@ -179,9 +211,9 @@ _(để trống nếu bạn không làm phần này)_
 - [x] Mọi section **"required — replace this line"** trong các file `benchmarks/*.md`
       đã được thay bằng nhận xét của bạn
 - [x] 5 screenshots trong `submission/screenshots/`
-- [ ] `make verify` → **exit 0**
-- [ ] Repo GitHub ở chế độ **public**
-- [ ] Đã paste public URL vào VinUni LMS
+- [x] `make verify` → **exit 0**
+- [x] Repo GitHub ở chế độ **public**
+- [x] Đã paste public URL vào VinUni LMS
 - [x] **Không** commit `models/*.gguf` hay `runtime/` (đã có trong `.gitignore`)
 
 **Quan trọng:** repo phải **public** đến khi điểm được công bố. Private → grader không
