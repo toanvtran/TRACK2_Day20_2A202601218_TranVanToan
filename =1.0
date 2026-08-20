@@ -1,0 +1,8 @@
+Requirement already satisfied: markdown-it-py in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (4.2.0)
+Requirement already satisfied: protobuf in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (7.35.1)
+Requirement already satisfied: python-dateutil in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (2.9.0.post0)
+Requirement already satisfied: python-dotenv in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (1.2.3)
+Requirement already satisfied: scipy>=1.10.0 in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (1.17.1)
+Requirement already satisfied: mdurl~=0.1 in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (from markdown-it-py) (0.1.2)
+Requirement already satisfied: six>=1.5 in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (from python-dateutil) (1.17.0)
+Requirement already satisfied: numpy<2.7,>=1.26.4 in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (from scipy>=1.10.0) (2.4.6)

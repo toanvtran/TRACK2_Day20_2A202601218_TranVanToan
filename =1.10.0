@@ -1,0 +1,25 @@
+Collecting markdown-it-py
+  Using cached markdown_it_py-4.2.0-py3-none-any.whl.metadata (7.4 kB)
+Collecting protobuf
+  Using cached protobuf-7.35.1-cp310-abi3-win_amd64.whl.metadata (595 bytes)
+Collecting python-dateutil
+  Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting python-dotenv
+  Using cached python_dotenv-1.2.3-py3-none-any.whl.metadata (29 kB)
+Collecting scipy
+  Using cached scipy-1.17.1-cp311-cp311-win_amd64.whl.metadata (60 kB)
+Collecting mdurl~=0.1 (from markdown-it-py)
+  Using cached mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+Collecting six>=1.5 (from python-dateutil)
+  Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Requirement already satisfied: numpy<2.7,>=1.26.4 in C:\Users\toant\.local\share\mamba\envs\vinuni-lab20\Lib\site-packages (from scipy) (2.4.6)
+Using cached markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+Using cached mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Using cached protobuf-7.35.1-cp310-abi3-win_amd64.whl (439 kB)
+Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Using cached python_dotenv-1.2.3-py3-none-any.whl (22 kB)
+Using cached scipy-1.17.1-cp311-cp311-win_amd64.whl (36.6 MB)
+Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+Installing collected packages: six, scipy, python-dotenv, protobuf, mdurl, python-dateutil, markdown-it-py
+
+Successfully installed markdown-it-py-4.2.0 mdurl-0.1.2 protobuf-7.35.1 python-dateutil-2.9.0.post0 python-dotenv-1.2.3 scipy-1.17.1 six-1.17.0
